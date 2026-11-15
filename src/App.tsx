@@ -12,9 +12,11 @@ function App() {
 
   const cerrarToast = useCallback(() => setToast(null), []);
 
-  const notificarExito = (mensaje: string, tipo: "crear" | "editar") => {
-    setProductoEditar(null);
-    setRecargar((prev) => prev + 1);
+  const notificar = (mensaje: string, tipo: ToastTipo, refrescar = true) => {
+    if (refrescar) {
+      setProductoEditar(null);
+      setRecargar((prev) => prev + 1);
+    }
     setToast({ texto: mensaje, tipo });
   };
 
@@ -24,9 +26,13 @@ function App() {
       <ProductoForm
         key={productoEditar?.id ?? "nuevo"}
         productoEditar={productoEditar}
-        onGuardado={notificarExito}
+        onNotificar={notificar}
       />
-      <ProductoLista onEditar={setProductoEditar} recargar={recargar} />
+      <ProductoLista
+        onEditar={setProductoEditar}
+        onNotificar={notificar}
+        recargar={recargar}
+      />
 
       {toast && (
         <Toast
