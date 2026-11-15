@@ -7,18 +7,19 @@ import type { Producto } from "./services/productoService";
 
 function App() {
   const [productoEditar, setProductoEditar] = useState<Producto | null>(null);
-  const [recargar, setRecargar] = useState(0);
   const [toast, setToast] = useState<{ texto: string; tipo: ToastTipo } | null>(null);
 
   const cerrarToast = useCallback(() => setToast(null), []);
 
-  const notificar = (mensaje: string, tipo: ToastTipo, refrescar = true) => {
-    if (refrescar) {
-      setProductoEditar(null);
-      setRecargar((prev) => prev + 1);
-    }
-    setToast({ texto: mensaje, tipo });
-  };
+  const notificar = useCallback(
+    (mensaje: string, tipo: ToastTipo, limpiarEdicion = false) => {
+      if (limpiarEdicion) {
+        setProductoEditar(null);
+      }
+      setToast({ texto: mensaje, tipo });
+    },
+    []
+  );
 
   return (
     <div className="app-wrapper">
@@ -28,11 +29,7 @@ function App() {
         productoEditar={productoEditar}
         onNotificar={notificar}
       />
-      <ProductoLista
-        onEditar={setProductoEditar}
-        onNotificar={notificar}
-        recargar={recargar}
-      />
+      <ProductoLista onEditar={setProductoEditar} onNotificar={notificar} />
 
       {toast && (
         <Toast

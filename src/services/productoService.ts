@@ -1,5 +1,14 @@
 import { db } from "../firebase.ts";
-import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  updateDoc,
+  deleteDoc,
+  onSnapshot,
+  type Unsubscribe,
+} from "firebase/firestore";
 
 export interface Producto {
   id: string;
@@ -8,35 +17,50 @@ export interface Producto {
   stock: number;
 }
 
+export const suscribirProductos = (
+  onDatos: (productos: Producto[]) => void,
+  onError?: (error: Error) => void
+): Unsubscribe => {
+  const productosRef = collection(db, "productos");
+
+  const unsubscribe = onSnapshot(
+    productosRef,
+    (querySnapshot) => {
+      const productos = querySnapshot.docs.map((documento) => ({
+        id: documento.id,
+        ...documento.data(),
+      })) as Producto[];
+
+      onDatos(productos);
+    },
+    (error) => {
+      console.error("Error en la suscripción de productos:", error);
+      onError?.(error);
+    }
+  );
+
+  return unsubscribe;
+};
+
 export const crearProducto = async (
   nombre: string,
   precio: number,
-  stock: number,
+  stock: number
 ) => {
-  try {
-    const docRef = await addDoc(collection(db, "productos"), {
-      nombre,
-      precio,
-      stock,
-    });
-
-    console.log("Producto creado: ", docRef.id);
-    return docRef;
-  } catch (error) {
-    console.log("error: " + error);
-    throw error;
-  }
+  const docRef = await addDoc(collection(db, "productos"), {
+    nombre,
+    precio,
+    stock,
+  });
+  return docRef;
 };
 
 export const obtenerProductos = async (): Promise<Producto[]> => {
   const querySnapshot = await getDocs(collection(db, "productos"));
-
-  const productos = querySnapshot.docs.map((docs) => ({
+  return querySnapshot.docs.map((docs) => ({
     id: docs.id,
     ...docs.data(),
   })) as Producto[];
-
-  return productos;
 };
 
 export const actualizarProducto = async (
@@ -44,17 +68,16 @@ export const actualizarProducto = async (
   nombre: string,
   precio: number,
   stock: number
-)=> {
-  const productRef = doc(db,"productos", id);
-
+) => {
+  const productRef = doc(db, "productos", id);
   await updateDoc(productRef, {
     nombre,
     precio,
-    stock
-  })
-}
+    stock,
+  });
+};
 
-export const eliminarProducto = async (id: string) =>{
+export const eliminarProducto = async (id: string) => {
   const productoRef = doc(db, "productos", id);
   await deleteDoc(productoRef);
-}
+};

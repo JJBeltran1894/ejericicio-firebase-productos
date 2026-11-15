@@ -30,13 +30,13 @@ const ProductoForm = ({ productoEditar, onNotificar }: Props) => {
           Number(precio),
           Number(stock)
         );
-        onNotificar(`Producto "${nombre}" actualizado`, "editar");
+        onNotificar(`Producto "${nombre}" actualizado`, "editar", true);
       } else {
         await crearProducto(nombre.trim(), Number(precio), Number(stock));
         setNombre("");
         setPrecio("");
         setStock("");
-        onNotificar(`Producto "${nombre}" guardado`, "crear");
+        onNotificar(`Producto "${nombre}" guardado`, "crear", true);
       }
     } catch (error) {
       console.error("Error en Firestore:", error);

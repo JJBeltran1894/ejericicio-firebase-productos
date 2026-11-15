@@ -1,28 +1,32 @@
-import { obtenerProductos, eliminarProducto, type Producto } from "../services/productoService";
+import {
+  suscribirProductos,
+  eliminarProducto,
+  type Producto,
+} from "../services/productoService";
 import { useEffect, useState } from "react";
 import type { ToastTipo } from "./Toast";
 
 interface Props {
   onEditar: (producto: Producto) => void;
-  onNotificar: (mensaje: string, tipo: ToastTipo, refrescar?: boolean) => void;
-  recargar: number;
+  onNotificar: (mensaje: string, tipo: ToastTipo) => void;
 }
 
-export const ProductoLista = ({ onEditar, onNotificar, recargar }: Props) => {
+export const ProductoLista = ({ onEditar, onNotificar }: Props) => {
   const [productos, setProductos] = useState<Producto[]>([]);
 
   useEffect(() => {
-    const cargarProductos = async () => {
-      try {
-        const datos = await obtenerProductos();
+    const unsubscribe = suscribirProductos(
+      (datos) => {
         setProductos(datos);
-      } catch (error) {
-        console.error("Error al obtener productos:", error);
-        onNotificar("No se pudieron cargar los productos", "error", false);
+      },
+      () => {
+        onNotificar("Error al sincronizar productos en tiempo real", "error");
       }
-    };
-    cargarProductos();
-  }, [recargar]);
+    );
+
+    // Limpieza obligatoria al desmontar el componente
+    return () => unsubscribe();
+  }, [onNotificar]);
 
   const handleEliminar = async (producto: Producto) => {
     try {
@@ -30,7 +34,7 @@ export const ProductoLista = ({ onEditar, onNotificar, recargar }: Props) => {
       onNotificar(`Producto "${producto.nombre}" eliminado`, "error");
     } catch (error) {
       console.error("Error al eliminar:", error);
-      onNotificar("Error al eliminar (revisa reglas de Firebase)", "error", false);
+      onNotificar("Error al eliminar el producto", "error");
     }
   };
 
