@@ -142,3 +142,31 @@
   color: var(--text-muted);
   font-size: 0.85rem;
 }
+/* Botón Editar estilo Material Outlined Neon */
+.btn-editar {
+  background-color: rgba(155, 93, 229, 0.12);
+  color: var(--neon-purple);
+  border: 1px solid rgba(155, 93, 229, 0.45);
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-editar:hover {
+  background-color: var(--neon-purple);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(155, 93, 229, 0.55);
+}
+
+.btn-editar:active {
+  transform: scale(0.97);
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 0.65;
+  cursor: pointer;
+}

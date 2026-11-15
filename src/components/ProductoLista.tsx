@@ -31,7 +31,7 @@ export const ProductoLista = ({onEditar}: Props) => {
             <div className="producto-meta">
               <span className="tag-precio">${producto.precio}</span>
               <span className="tag-stock">Stock: {producto.stock}</span>
-              <button onClick={()=> onEditar(producto)}>Editar</button>
+              <button className="btn-editar" onClick={()=> onEditar(producto)}>Editar</button>
             </div>
           </article>
         ))}
