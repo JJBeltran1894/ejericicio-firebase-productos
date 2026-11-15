@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 
 interface Props {
   onEditar: (producto: Producto) => void;
+  recargar: number;
 }
 
-export const ProductoLista = ({onEditar}: Props) => {
+export const ProductoLista = ({ onEditar, recargar }: Props) => {
   const [productos, setProductos] = useState<Producto[]>([]);
 
   useEffect(() => {
@@ -18,7 +19,7 @@ export const ProductoLista = ({onEditar}: Props) => {
       }
     };
     cargarProductos();
-  }, []);
+  }, [recargar]);
 
   return (
     <div>
@@ -31,7 +32,9 @@ export const ProductoLista = ({onEditar}: Props) => {
             <div className="producto-meta">
               <span className="tag-precio">${producto.precio}</span>
               <span className="tag-stock">Stock: {producto.stock}</span>
-              <button className="btn-editar" onClick={()=> onEditar(producto)}>Editar</button>
+              <button className="btn-editar" onClick={() => onEditar(producto)}>
+                Editar
+              </button>
             </div>
           </article>
         ))}

@@ -1,13 +1,12 @@
 import { useState, type SyntheticEvent } from "react";
-import {actualizarProducto, crearProducto, type Producto} from "../services/productoService";
-
+import { actualizarProducto, crearProducto, type Producto } from "../services/productoService";
 
 interface Props {
   productoEditar: Producto | null;
-
+  onGuardado: (mensaje: string, tipo: "crear" | "editar") => void;
 }
 
-const ProductoForm = ({productoEditar}:Props) => {
+const ProductoForm = ({ productoEditar, onGuardado }: Props) => {
   const [nombre, setNombre] = useState(productoEditar?.nombre ?? "");
   const [precio, setPrecio] = useState(productoEditar?.precio.toString() ?? "");
   const [stock, setStock] = useState(productoEditar?.stock.toString() ?? "");
@@ -18,31 +17,26 @@ const ProductoForm = ({productoEditar}:Props) => {
     e.preventDefault();
 
     try {
-
-      if(productoEditar){
-
+      if (productoEditar) {
         await actualizarProducto(
           productoEditar.id,
           nombre,
           Number(precio),
           Number(stock)
         );
-        
-        console.log("Prodcuto actualizado");
+
         setNombre("");
         setPrecio("");
         setStock("");
+        onGuardado(`Producto "${nombre}" actualizado correctamente`, "editar");
+      } else {
+        await crearProducto(nombre, Number(precio), Number(stock));
 
-      }else{
-        const id = await crearProducto(nombre, Number(precio), Number(stock));
-
-        console.log("Producto creado: ", id);
         setNombre("");
         setPrecio("");
         setStock("");
-
+        onGuardado(`Producto "${nombre}" guardado con éxito`, "crear");
       }
-        
     } catch (error) {
       console.log("error: " + error);
     }
